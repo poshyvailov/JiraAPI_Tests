@@ -4,38 +4,38 @@ import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.testng.Assert.assertEquals;
-import static org.hamcrest.Matchers.equalTo;
 
 
 public class JiraApiTests {
     private String ticketId;
 
+    //Пробный тест на получение тикета
     @Test
     public void getExistingIssue() {
 
         Response response =
-                given().
-                        auth().preemptive().basic("webinar5", "webinar5").
-                        contentType(ContentType.JSON).
+                        given().
+                          auth().preemptive().basic("webinar5", "webinar5").
+                          contentType(ContentType.JSON).
                         when().
-                        get("http://jira.hillel.it/rest/api/2/issue/WEBINAR-9060").
+                          get("http://jira.hillel.it/rest/api/2/issue/WEBINAR-9060").
                         then().
-                        contentType(ContentType.JSON).
-                        extract().response();
+                          contentType(ContentType.JSON).
+                          extract().response();
 
-        assertEquals(response.statusCode(), 200);
-        assertEquals("WEBINAR-9060", response.path("key"));
-        response.print();
+                          assertEquals(response.statusCode(), 200);
+                          assertEquals("WEBINAR-9060", response.path("key"));
+                          response.print();
     }
 
-
+//Создаем новый тикет
     @Test
     public void createIssue() {
         Response response =
-                given().
-                        auth().preemptive().basic("webinar5", "webinar5").
-                        contentType(ContentType.JSON).
-                        body("{\n" +
+                        given().
+                          auth().preemptive().basic("webinar5", "webinar5").
+                          contentType(ContentType.JSON).
+                          body("{\n" +
                                 "   \"fields\":{\n" +
                                 "      \"summary\":\"Test OP ticket\",\n" +
                                 "      \"issuetype\":{\n" +
@@ -51,16 +51,16 @@ public class JiraApiTests {
                                 "   }\n" +
                                 "}").
                         when().
-                        post("https://jira.hillel.it/rest/api/2/issue").
+                          post("https://jira.hillel.it/rest/api/2/issue").
                         then().
-                        contentType(ContentType.JSON).
-                        statusCode(201).
-                        extract().response();
-        response.print();
-        ticketId = response.path("id");
-        System.out.println(ticketId);
+                          contentType(ContentType.JSON).
+                          statusCode(201).
+                          extract().response();
+                          ticketId = response.path("id");
+                          System.out.println(ticketId);
 
         //Get created issue
+        //Получаем созданный тикет и проверяем его contentType, статус код, проверяем саммари и проверчем автора
         Response response2 =
                given().
                   auth().preemptive().basic("webinar5", "webinar5").
@@ -72,38 +72,38 @@ public class JiraApiTests {
                   statusCode(200).
                   extract().response();
                   response2.print();
-                  assertEquals("Test OP ticket", response2.path("summary"));
-                  assertEquals("webinar5", response2.path("name"));
-    }
+                  assertEquals(response2.path("fields.summary"), "Test OP ticket");
+                  assertEquals(response2.path("fields.creator.name"), "webinar5");
 
-    @Test
-    public void getIssueApiTest() {
-        Response response =
-                given().
-                        auth().preemptive().basic("webinar5", "webinar5").
-                        contentType(ContentType.JSON).
+        //Delete created issue
+        //Удаляем созданный тикет и проверяем,что нам вернулся 204 статус код
+        Response deleteIssueResponse =
+                        given().
+                          auth().preemptive().basic("webinar5", "webinar5").
+                          contentType(ContentType.JSON).
                         when().
-                        get("https://jira.hillel.it/rest/api/2/issue/78948").
+                          delete("https://jira.hillel.it/rest/api/2/issue/" + ticketId).
                         then().
-                        contentType(ContentType.JSON).
-                        statusCode(200).
-                        extract().response();
-                        response.print();
-                        assertEquals("Test OP ticket", response.path("summary"));
-                        response.then().assertThat().body("summary", equalTo("Test OP ticket"));
+                          statusCode(204).
+                          extract().response();
+                          deleteIssueResponse.print();
 
-
-
-
-
-//        assertEquals(response.statusCode(), 200);
-//        assertEquals("Main order flow broken", response.path("summary"));
-//        assertEquals("webinar5", response.path("name"));
-
+        //Get deleted issue
+        //Запрошиваем наш тестовый, удаленный тикет и проверяем, что нам вернулся 404 статус код
+        Response checkIfIssueDeletedResponse =
+                        given().
+                          auth().preemptive().basic("webinar5", "webinar5").
+                          contentType(ContentType.JSON).
+                        when().
+                          get("https://jira.hillel.it/rest/api/2/issue/" + ticketId).
+                        then().
+                          statusCode(404).
+                          extract().response();
+      }
     }
 
 
-}
+
 
 
 // RegEx how to extract ticket number
