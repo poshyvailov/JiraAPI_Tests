@@ -1,110 +1,130 @@
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
-
+import utills.JiraApiSteps;
+import utills.TestJiraJsonObject;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 
 public class JiraApiTests {
+
     private String ticketId;
+    String issueName;
 
-    //Пробный тест на получение тикета
-    @Test
-    public void getExistingIssue() {
-
-        Response response =
-                        given().
-                          auth().preemptive().basic("webinar5", "webinar5").
-                          contentType(ContentType.JSON).
-                        when().
-                          get("http://jira.hillel.it/rest/api/2/issue/WEBINAR-9060").
-                        then().
-                          contentType(ContentType.JSON).
-                          extract().response();
-
-                          assertEquals(response.statusCode(), 200);
-                          assertEquals("WEBINAR-9060", response.path("key"));
-                          response.print();
-    }
-
-//Создаем новый тикет
     @Test
     public void createIssue() {
-        Response response =
-                        given().
-                          auth().preemptive().basic("webinar5", "webinar5").
-                          contentType(ContentType.JSON).
-                          body("{\n" +
-                                "   \"fields\":{\n" +
-                                "      \"summary\":\"Test OP ticket\",\n" +
-                                "      \"issuetype\":{\n" +
-                                "         \"id\":\"10105\",\n" +
-                                "         \"name\":\"test\"\n" +
-                                "      },\n" +
-                                "      \"project\":{\n" +
-                                "         \"id\":\"10508\"\n" +
-                                "      },\n" +
-                                "   \"reporter\": {\n" +
-                                "      \"name\": \"webinar5\"\n" +
-                                "    }\n" +
+
+        //Создаем новый тикет
+        Response createNewIssueResponse = JiraApiSteps.createIssue();
+        ticketId = createNewIssueResponse.path("id");
+        issueName = createNewIssueResponse.path("key");  //Вытягиваем имя, созданного, тикета в переменную
+        assertTrue(issueName.contains("WEBINAR-"));  // Проверяем,что имя тикета содержить слово ""WEBINAR-
+
+        //Получаем созданный тикет
+        Response getCreatedIssueResponse = JiraApiSteps.getCreatedIssue(ticketId);
+        getCreatedIssueResponse.print();
+        assertEquals(getCreatedIssueResponse.path("fields.summary"), "Test OP ticket");
+        assertEquals(getCreatedIssueResponse.path("fields.creator.name"), "webinar5");
+
+        //Удаляем созданный тикет
+        Response deleteIssueResponse = JiraApiSteps.deleteIssue(ticketId);
+        deleteIssueResponse.print();
+
+        //Пытаемся получить удаленный тикет
+        Response checkIfIssueDeletedResponse = JiraApiSteps.checkIfIssueDeleted(ticketId);
+    }
+
+    @Test
+    public void addAndRemoveCommentTestApiSteps() {
+        String testIssueId = "WEBINAR-12623";
+        String commentId;
+
+        //Получаем тестовый тикет и проверяем,что он не содержит ни одного коммента
+        Response checkIfTicketDoesntContainCommentsResponse =
+                given().
+                        auth().preemptive().basic("webinar5", "webinar5").
+                        contentType(ContentType.JSON).
+                        when().
+                        get("http://jira.hillel.it/rest/api/2/issue/" + testIssueId).
+                        then().
+                        contentType(ContentType.JSON).
+                        statusCode(200).
+                        body("comments", equalTo(null)).
+                        extract().response();
+
+        //Добавляем новый комментарий для тестового тикета и проверяем респонс статус код
+        Response addNewCommentToIssueResponse =
+                given().
+                        auth().preemptive().basic("webinar5", "webinar5").
+                        contentType(ContentType.JSON).
+                        body("{\n" +
+                                "   \"update\": {\n" +
+                                "      \"comment\": [\n" +
+                                "         {\n" +
+                                "            \"add\": {\n" +
+                                "               \"body\": \"Test comment from OP\"\n" +
+                                "            }\n" +
+                                "         }\n" +
+                                "      ]\n" +
                                 "   }\n" +
                                 "}").
                         when().
-                          post("https://jira.hillel.it/rest/api/2/issue").
+                        put("https://jira.hillel.it/rest/api/2/issue/" + testIssueId).
                         then().
-                          contentType(ContentType.JSON).
-                          statusCode(201).
-                          extract().response();
-                          ticketId = response.path("id");
-                          System.out.println(ticketId);
+                        contentType(ContentType.JSON).
+                        statusCode(204).
+                        extract().response();
 
-        //Get created issue
-        //Получаем созданный тикет и проверяем его contentType, статус код, проверяем саммари и проверчем автора
-        Response response2 =
-               given().
-                  auth().preemptive().basic("webinar5", "webinar5").
-                  contentType(ContentType.JSON).
-                when().
-                  get("https://jira.hillel.it/rest/api/2/issue/" + ticketId).
-                then().
-                  contentType(ContentType.JSON).
-                  statusCode(200).
-                  extract().response();
-                  response2.print();
-                  assertEquals(response2.path("fields.summary"), "Test OP ticket");
-                  assertEquals(response2.path("fields.creator.name"), "webinar5");
-
-        //Delete created issue
-        //Удаляем созданный тикет и проверяем,что нам вернулся 204 статус код
-        Response deleteIssueResponse =
-                        given().
-                          auth().preemptive().basic("webinar5", "webinar5").
-                          contentType(ContentType.JSON).
+        //Получаем наш тикет с тестовым комментом и достаем и сохраняем айдишку нашего коммента
+        Response getIssueWithCommentResponse =
+                given().
+                        auth().preemptive().basic("webinar5", "webinar5").
+                        contentType(ContentType.JSON).
                         when().
-                          delete("https://jira.hillel.it/rest/api/2/issue/" + ticketId).
+                        get("http://jira.hillel.it/rest/api/2/issue/" + testIssueId).
                         then().
-                          statusCode(204).
-                          extract().response();
-                          deleteIssueResponse.print();
+                        contentType(ContentType.JSON).
+                        statusCode(200).
+                        extract().response();
+        getIssueWithCommentResponse.print();
+        commentId = getIssueWithCommentResponse.path("fields.comment.comments[0].id");
+        System.out.println(commentId);
 
-        //Get deleted issue
-        //Запрошиваем наш тестовый, удаленный тикет и проверяем, что нам вернулся 404 статус код
-        Response checkIfIssueDeletedResponse =
-                        given().
-                          auth().preemptive().basic("webinar5", "webinar5").
-                          contentType(ContentType.JSON).
+        //Удаляем созданный коммент из тикета и проверяем, какой вернулся статус код
+        Response removeCommentFromTestTicketResponse =
+                given().
+                        auth().preemptive().basic("webinar5", "webinar5").
+                        contentType(ContentType.JSON).
                         when().
-                          get("https://jira.hillel.it/rest/api/2/issue/" + ticketId).
+                        delete("https://jira.hillel.it/rest/api/2/issue/" + testIssueId + "/comment/" + commentId + "/").
                         then().
-                          statusCode(404).
-                          extract().response();
-      }
+                        statusCode(204).
+                        extract().response();
+
+        //Запрашиваем наш тестовый т икет и проверяем,что его боди не содержить айдишку нашего коммента
+        //Также проверяем,что ответ пришел в течении 1 секунды
+        Response checkIfCommentDeletedResponse =
+                given().
+                        auth().preemptive().basic("webinar5", "webinar5").
+                        contentType(ContentType.JSON).
+                        when().
+                        get("http://jira.hillel.it/rest/api/2/issue/" + testIssueId).
+                        then().
+                        contentType(ContentType.JSON).
+                        statusCode(200).
+                        and().time(lessThan(1000L)).
+                        body(commentId, equalTo(null)).
+                        body("comments", equalTo(null)).
+                        extract().response();
     }
 
+}
 
 
-
+//Check response time -                   statusCode(200).and().time(lessThan(10L)).
 
 // RegEx how to extract ticket number
 //        final Matcher<String> matcher = new MatchesPattern(Pattern.compile("[A-Z]+\\-[0-9]+"));
