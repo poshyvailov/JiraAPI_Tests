@@ -10,9 +10,10 @@ import static org.hamcrest.Matchers.lessThan;
 public class JiraApiSteps {
 
     public static String newIssue = TestJiraJsonObject.newIssueJson();
+    public static String commentJsonObj = JiraCommentJsonObject.commentJson();
 
-    static String testIssueId = "WEBINAR-12623";
-    static String commentId;
+//    static String testIssueId = "WEBINAR-12623";
+    public static String commentId;
 
 
     public static Response createIssue() {
@@ -84,7 +85,7 @@ public class JiraApiSteps {
                         auth().preemptive().basic(Credentials.username, Credentials.password).
                         contentType(ContentType.JSON).
                         when().
-                        get(APIPathes.issue + testIssueId).
+                        get(APIPathes.testIssueId).
                         then().
                         contentType(ContentType.JSON).
                         statusCode(200).
@@ -110,7 +111,7 @@ public class JiraApiSteps {
                                 "   }\n" +
                                 "}").
                         when().
-                        put(APIPathes.issue + testIssueId).
+                        put(APIPathes.testIssueId).
                         then().
                         contentType(ContentType.JSON).
                         statusCode(204).
@@ -124,13 +125,13 @@ public class JiraApiSteps {
                         auth().preemptive().basic(Credentials.username, Credentials.password).
                         contentType(ContentType.JSON).
                         when().
-                        get(APIPathes.issue+ testIssueId).
+                        get(APIPathes.testIssueId).
                         then().
                         contentType(ContentType.JSON).
                         statusCode(200).
                         extract().response();
         commentId = response.path("fields.comment.comments[0].id");
-//        commentId = getIssueWithComment.path("fields.comment.comments[0].id");
+//      commentId = getIssueWithComment.path("fields.comment.comments[0].id");
         System.out.println(commentId);
         return response;
     }
@@ -141,7 +142,10 @@ public class JiraApiSteps {
                         auth().preemptive().basic(Credentials.username, Credentials.password).
                         contentType(ContentType.JSON).
                         when().
-                        delete(APIPathes.issue + testIssueId + "/comment/" + commentId + "/").
+                        // Тут получилось ооочень натянутое применение стринг формат.Но я не нашел места, в моем тесте,
+                        // где его стоило бы вообще применять (включительно это место). Раньше было лучше :)
+                        delete(String.format(APIPathes.comment, APIPathes.testIssueId) + commentId + "/").
+//                      delete(APIPathes.testIssueId + "/comment/" + commentId + "/").
                         then().
                         statusCode(204).
                         extract().response();
@@ -154,13 +158,10 @@ public class JiraApiSteps {
                         auth().preemptive().basic(Credentials.username, Credentials.password).
                         contentType(ContentType.JSON).
                         when().
-                        get(APIPathes.issue + testIssueId).
+                        get(APIPathes.testIssueId).
                         then().
                         contentType(ContentType.JSON).
                         statusCode(200).
-                        and().time(lessThan(1000L)).
-                        body(commentId, equalTo(null)).
-                        body("comments", equalTo(null)).
                         extract().response();
         return response;
     }

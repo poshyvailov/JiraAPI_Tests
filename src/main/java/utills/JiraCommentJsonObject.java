@@ -11,11 +11,10 @@ public class JiraCommentJsonObject {
         JSONObject comment = new JSONObject();
         JSONObject add = new JSONObject();
 
+        commentJson.put("update", update);
         update.put("comment", comment);
         comment.put("add", add);
         add.put("body", "Test comment from OP");
-
-        commentJson.put("update", update);
 
 
         return commentJson.toJSONString();

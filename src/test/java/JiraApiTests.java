@@ -42,12 +42,29 @@ public class JiraApiTests {
     @Test
     public void addAndRemoveCommentTestApiSteps(){
         Response checkIfTicketDoesntContainCommentsResponse = JiraApiSteps.checkIfTicketDoesntContainComments();
+
         Response addNewCommentToIssueResponse = JiraApiSteps.addNewCommentToIssue();
+
         Response getIssueWithCommentResponse = JiraApiSteps.getIssueWithComment();
+
         Response removeCommentFromTestTicketResponse = JiraApiSteps.removeCommentFromTestTicket();
+
         Response checkIfCommentDeletedResponse = JiraApiSteps.checkIfCommentDeleted();
 
+        JiraApiSteps.checkIfCommentDeleted().
+                then().
+                and().time(lessThan(1000L)).
+                body(JiraApiSteps.commentId, equalTo(null)).
+                body("comments", equalTo(null));
     }
+
+
+
+
+
+
+
+
 //    @Test
 //    public void addAndRemoveCommentTestApiSteps() {
 //        String testIssueId = "WEBINAR-12623";
