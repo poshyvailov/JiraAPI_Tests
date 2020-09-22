@@ -5,14 +5,13 @@ import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.lessThan;
+
 
 public class JiraApiSteps {
 
     public static String newIssue = TestJiraJsonObject.newIssueJson();
     public static String commentJsonObj = JiraCommentJsonObject.commentJson();
 
-//    static String testIssueId = "WEBINAR-12623";
     public static String commentId;
 
 
@@ -70,9 +69,6 @@ public class JiraApiSteps {
                         extract().response();
         return response;
     }
-
-
-
 
 
 
@@ -165,6 +161,4 @@ public class JiraApiSteps {
                         extract().response();
         return response;
     }
-
-
 }

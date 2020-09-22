@@ -50,7 +50,6 @@ public class JiraApiTests {
         Response removeCommentFromTestTicketResponse = JiraApiSteps.removeCommentFromTestTicket();
 
         Response checkIfCommentDeletedResponse = JiraApiSteps.checkIfCommentDeleted();
-
         JiraApiSteps.checkIfCommentDeleted().
                 then().
                 and().time(lessThan(1000L)).
