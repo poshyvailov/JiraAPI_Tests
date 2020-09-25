@@ -16,7 +16,6 @@ public class JiraCommentJsonObject {
         comment.put("add", add);
         add.put("body", "Test comment from OP");
 
-
         return commentJson.toJSONString();
     }
 }
