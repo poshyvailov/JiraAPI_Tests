@@ -4,6 +4,12 @@ The aim of this project is API tests for test Hillel Jira --- [Test Jira URL](ht
 
 This project uses rest assured library for Java 
 <hr></hr>
+The project consists of:
+<br>
+1.interface APIPathes - class contains basic URL's for tests
+<br>
+2.dfdsf
+<hr></hr>
 How to import and run project:
 <br>
 ( Example for IntelliJ IDEA )
