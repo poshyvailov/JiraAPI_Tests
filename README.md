@@ -1,5 +1,5 @@
 # JiraAPI_Tests
-The aim of this project is API tests for test Hillel Jira --- [Test Jira URL](https://jira.hillel.it/secure/Dashboard.jspa)
+The aim of this project is to test basic functions of Jira (Create ticket, detele ticket, add comment, delete comment) API for test Hillel Jira --- [Test Jira URL](https://jira.hillel.it/secure/Dashboard.jspa)
 <hr></hr>
 
 This project uses rest assured library for Java 
@@ -34,3 +34,8 @@ How to import and run project:
 5. Then open "JiraApiTests" class in IDE
 <br>
 6. And run required tests by clicking on the @Test annotations by right button of the mouse and selecting "Run" option
+<hr></hr>
+
+As the result of running tests from the "JiraApiTests" class should be two successfully passed tests
+<br>
+<a href="https://freeimage.host/"><img src="https://iili.io/216dl4.png" alt="216dl4.png" border="0"></a>
