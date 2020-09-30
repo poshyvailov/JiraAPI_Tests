@@ -6,9 +6,17 @@ This project uses rest assured library for Java
 <hr></hr>
 The project consists of:
 <br>
-1.interface APIPathes - class contains basic URL's for tests
+1.interface "APIPathes" - contains basic URL's for tests
 <br>
-2.dfdsf
+2.interface "Credentials"
+<br>
+3. "JiraCommentJsonObject" - class with Json object for "add comment" test
+<br>
+4. "TestJiraJsonObject" - class with Json object for "create issue" test
+<br>
+5. "JiraApiSteps" - class with steps for Jira API tests
+<br>
+6. "JiraApiTests" - class with tests for Jira API
 <hr></hr>
 How to import and run project:
 <br>
