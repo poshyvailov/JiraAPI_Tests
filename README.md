@@ -6,9 +6,9 @@ This project uses rest assured library for Java
 <hr></hr>
 The project consists of:
 <br>
-1.interface "APIPathes" - contains basic URL's for tests
+1. Interface "APIPathes" - contains basic URL's for tests
 <br>
-2.interface "Credentials"
+2. Interface "Credentials"
 <br>
 3. "JiraCommentJsonObject" - class with Json object for "add comment" test
 <br>
