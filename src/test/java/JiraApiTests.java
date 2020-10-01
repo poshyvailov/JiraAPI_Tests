@@ -39,13 +39,9 @@ public class JiraApiTests {
     @Test
     public void addAndRemoveCommentTestApiSteps() {
         Response checkIfTicketDoesntContainCommentsResponse = JiraApiSteps.checkIfTicketDoesntContainComments();
-
         Response addNewCommentToIssueResponse = JiraApiSteps.addNewCommentToIssue();
-
         Response getIssueWithCommentResponse = JiraApiSteps.getIssueWithComment();
-
         Response removeCommentFromTestTicketResponse = JiraApiSteps.removeCommentFromTestTicket();
-
         Response checkIfCommentDeletedResponse = JiraApiSteps.checkIfCommentDeleted();
         JiraApiSteps.checkIfCommentDeleted().
                 then().
@@ -54,14 +50,6 @@ public class JiraApiTests {
                 body("comments", equalTo(null));
     }
 }
-
-
-
-
-
-
-
-
 
 
 //Check response time -                   statusCode(200).and().time(lessThan(10L)).
