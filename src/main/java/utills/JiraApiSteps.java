@@ -1,5 +1,6 @@
 package utills;
 
+import io.qameta.allure.Feature;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import static io.restassured.RestAssured.given;
@@ -13,6 +14,7 @@ public class JiraApiSteps {
     public static String commentId;
 
 
+    @Feature(value = "asdfsdf")
     public static Response createIssue() {
         Response response =
                 given().

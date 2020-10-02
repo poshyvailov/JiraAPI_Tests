@@ -1,3 +1,4 @@
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import utills.JiraApiSteps;
@@ -12,6 +13,7 @@ public class JiraApiTests {
     private String ticketId;
     String issueName;
 
+    @Feature(value = "create issue")
     @Test
     public void createIssue() {
 
@@ -35,7 +37,7 @@ public class JiraApiTests {
         Response checkIfIssueDeletedResponse = JiraApiSteps.checkIfIssueDeleted(ticketId);
     }
 
-
+    @Feature(value = "addComment")
     @Test
     public void addAndRemoveCommentTestApiSteps() {
         Response checkIfTicketDoesntContainCommentsResponse = JiraApiSteps.checkIfTicketDoesntContainComments();
