@@ -30,6 +30,9 @@
                 <version>2.10</version>
                 <configuration>
                     <useFile>false</useFile>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                 </configuration>
             </plugin>
 <!--            <plugin>-->

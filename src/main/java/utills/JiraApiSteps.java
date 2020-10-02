@@ -1,4 +1,5 @@
 package utills;
+import io.qameta.allure.Step;
 
 import io.qameta.allure.Feature;
 import io.restassured.http.ContentType;
@@ -14,7 +15,7 @@ public class JiraApiSteps {
     public static String commentId;
 
 
-    @Feature(value = "asdfsdf")
+    @Step("Create new issue")
     public static Response createIssue() {
         Response response =
                 given().
@@ -30,6 +31,7 @@ public class JiraApiSteps {
         return response;
     }
 
+    @Step(value = "Get created issue")
     public static Response getCreatedIssue(String ticketId) {
         Response response =
                 given().
@@ -44,6 +46,7 @@ public class JiraApiSteps {
         return response;
     }
 
+    @Step(value = "Delete created issue")
     public static Response deleteIssue(String ticketId) {
         Response response =
                 given().
@@ -57,6 +60,7 @@ public class JiraApiSteps {
         return response;
     }
 
+    @Step(value = "Check if issue deleted")
     public static Response checkIfIssueDeleted(String ticketId) {
         Response response =
                 given().
@@ -75,6 +79,7 @@ public class JiraApiSteps {
 
 
 //Add/check/remove comment steps
+    @Step(value = "Check is ticket doesnt contain comment")
     public static Response checkIfTicketDoesntContainComments() {
         Response response =
                 given().
@@ -90,6 +95,7 @@ public class JiraApiSteps {
         return response;
     }
 
+    @Step(value = "Add new comment")
     public static Response addNewCommentToIssue(){
         Response response =
                 given().
@@ -115,6 +121,7 @@ public class JiraApiSteps {
         return response;
     }
 
+    @Step(value = "Get issue with new comment")
     public static Response getIssueWithComment(){
         Response response =
                 given().
@@ -132,6 +139,7 @@ public class JiraApiSteps {
         return response;
     }
 
+    @Step(value = "Remove comment")
     public static Response removeCommentFromTestTicket(){
         Response response =
                 given().
@@ -148,6 +156,7 @@ public class JiraApiSteps {
         return response;
     }
 
+    @Step(value = "Check if comment deleted")
     public static Response checkIfCommentDeleted(){
         Response response =
                 given().
